@@ -36,6 +36,8 @@ namespace Karasu.Repositories
                 ? _categories.SelectMany(c => c.Songs)
                 : _categories.Where(c => c.Name.Equals(category, StringComparison.OrdinalIgnoreCase)).SelectMany(c => c.Songs);
 
+            songs = songs.OrderBy(s => s.Artist).ThenBy(s => s.Title);
+
             if (string.IsNullOrWhiteSpace(query))
             {
                 return songs.Skip(skip).Take(take);
@@ -115,13 +117,23 @@ namespace Karasu.Repositories
             foreach (var path in paths)
             {
                 if (!Directory.Exists(path)) continue;
-                foreach (var file in Directory.GetFiles(path))
+
+                var libraryDirName = Path.GetFileName(Path.GetDirectoryName(path));
+
+                foreach (var file in Directory.GetFiles(path, "*.*", SearchOption.AllDirectories))
                 {
                     var name = Path.GetFileNameWithoutExtension(file) ?? "Unknown Song";
                     var parts = name.Split(new[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
 
-                    var categoryName = "General";
+                    var categoryName = "Uncategorized";
                     Category category;
+
+                    var songDirName = Path.GetFileName(Path.GetDirectoryName(file));
+
+                    if (songDirName != null && !string.Equals(libraryDirName, songDirName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        categoryName = songDirName;
+                    }
 
                     if (!categories.TryGetValue(categoryName, out category))
                     {
