@@ -53,6 +53,14 @@ namespace Karasu.Controllers
             return Request.CreateResponse(success ? HttpStatusCode.OK : HttpStatusCode.InternalServerError);
         }
 
+        [HttpPost, Route("pause")]
+        public HttpResponseMessage Pause(SongControlDTO dto)
+        {
+            var success = _songRunner.PauseCurrent();
+
+            return Request.CreateResponse(success ? HttpStatusCode.OK : HttpStatusCode.InternalServerError);
+        }
+
         [HttpPost, Route("skip")]
         public HttpResponseMessage Skip(SongControlDTO dto)
         {

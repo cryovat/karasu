@@ -43,6 +43,22 @@ namespace Karasu.Instrumentation
             }
         }
 
+        public bool PauseCurrent()
+        {
+            var process = _process;
+            if (process == null) return false;
+
+            try
+            {
+                process.StandardInput.WriteLine("pause");
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
 
         public bool SkipCurrent()
         {
